@@ -22,19 +22,19 @@ ChartJS.register(
   BarElement,
   PointElement,
   LineElement,
-  Legend,
   Tooltip,
   LineController,
   BarController,
   Title,
   Filler,
-  
 );
 
 
 
 function App() {
   const [datas, setData] = useState(null);
+  const [filter,setFilter]=useState('');
+  // console.log(filter);
 
   useEffect(()=>{
     const jsonPath = '/mock_data.json';
@@ -50,7 +50,33 @@ function App() {
       });
 
   },[])
+  const handleClick = (elements) => {
+    // 클릭 이벤트 처리
+    if (elements.length > 0) {
+      const clickedElement = elements[0];
+      if(filter.length===0)
+      {
+        setFilter(ids[clickedElement.index]);
+      }
+      else {
+        setFilter('')
+      }
+    }
+  };
+  const onFilter=(e)=>{
+    if(filter.length===0)
+    {
+      setFilter(e);
+    }
+    else {
+      setFilter('')
+    }
+    console.log(filter);
+  }
+
   const options = {
+    onClick: (event, elements) => {
+      handleClick(elements);},
     responsive: true,
     interaction: {
       mode: 'index',
@@ -63,9 +89,6 @@ function App() {
         text: 'Chart.js  Chart - Multi Axis',
       },
       tooltip: {
-        // backgroundColor: 'rgba(255,255,255,0.8)',
-        // titleFont: { size: 20 },
-        // bodyFont: { size: 20, color: '#000' }
         callbacks:{
           title: function(tooltipItems, data) {
             let dataIndex = tooltipItems[0].dataIndex;
@@ -78,7 +101,7 @@ function App() {
       x: {
         beginAtZero: true,
         ticks: {
-          maxTicksLimit: 10, // 최대 5개의 눈금만 표시
+          maxTicksLimit: 10, // 최대 10개의 눈금만 표시
         },
       },
       y: {
@@ -133,7 +156,9 @@ function App() {
       {
         type: 'bar',
         label: 'bar',
-        backgroundColor: 'rgb(75, 192, 192)',
+        backgroundColor: (context)=>{
+          return ids[context.dataIndex]===filter?'rgb(87, 65,191)':'rgb(158, 161, 255)';
+        },
         data: valueDatas,
         borderColor: 'white',
         borderWidth: 2,
@@ -148,8 +173,8 @@ function App() {
 
 return (
   <Container>
-    <button >해제</button>
-    {idCategory.map((data,idx)=> <button key={data}>{data}</button>)}
+    <Button onClick={()=>onFilter('')} >해제</Button>
+    {idCategory.map((data,idx)=> <Button $filter={filter===data} onClick={()=>onFilter(data)} key={data}>{data}</Button>)}
     <Chart options={options} data={data} />;
   </Container>
 );
@@ -161,4 +186,35 @@ export default App;
 const Container = styled.div`
 width: 90vw;
 // max-width: 900px;
+margin: 0 auto;
+padding: 100px 0px;
 `;
+
+const Button = styled.button`
+  display: inline-flex;
+  align-items: center;
+  border: none;
+  border-radius: 2.25rem;
+  font-weight: bold;
+  cursor: pointer;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  
+  background-color: ${props => (props.$filter? 'red' : 'blue')};
+  color: white;
+
+  margin:10px;
+  
+  &:hover{
+    background: #339af0;
+}
+  &:active{
+    background: #1c7ed6;
+  }
+
+
+    /*크기*/
+    height: 2rem;
+    font-size: 1rem;
+
+`
