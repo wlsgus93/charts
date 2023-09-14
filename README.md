@@ -13,7 +13,7 @@
 
 ### 3. 프로젝트 구현 영상 및 링크
    
-
+http://vizchart.s3-website-us-east-1.amazonaws.com/
 
 
 
